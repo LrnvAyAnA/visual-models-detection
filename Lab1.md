@@ -51,7 +51,8 @@
 
 # Диаграмма прецедентов на основе функциональных требований
 
-![use-case drawio](https://github.com/user-attachments/assets/1d668939-eebe-4558-9acc-b78470f2c21b)
+![image](https://github.com/user-attachments/assets/5462a9e5-ef41-4f38-bf12-dd571cd26188)
+
 
 # Перечень сделанных предположений
 
