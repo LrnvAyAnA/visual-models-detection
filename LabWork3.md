@@ -1,13 +1,15 @@
 # Диаграмма контейнеров
 
-![Container drawio](https://github.com/user-attachments/assets/a98a6bf6-4f56-42da-b902-1c1728c26c0c)
+![Диаг контейнеров drawio](https://github.com/user-attachments/assets/0feb7747-7fda-4130-a151-f5a274895376)
 
 # Диаграмма компонентов контейнера Сервер анализа и распознавания
 
-![Untitled Diagram-Page-4 drawio](https://github.com/user-attachments/assets/7c9bba4b-ed15-40e3-81bf-2a86a53ced42)
+![Диаг компонентов контейнера drawio](https://github.com/user-attachments/assets/9107da3a-c04e-40a8-8c8d-92a278654555)
 
 # Диаграмма последовательностей
+
 ## Описание диаграммы
+
 1. Пользователь загружает визуальную модель через клиентское приложение.
 2. API-шлюз передает запрос в модуль обработки данных.
 3. Данные проходят через предварительную обработку.
@@ -15,11 +17,13 @@
 5. Результаты передаются в менеджер результатов для сохранения в БД.
 6. Менеджер результатов возвращает ответ пользователю.
 
-![Sequence drawio (2)](https://github.com/user-attachments/assets/c1d824a3-b4fb-4206-a371-ba19fd876841)
+![Диаг последовательностей drawio](https://github.com/user-attachments/assets/4f3d470d-d062-433d-90c2-e96efcc3b5e3)
+
 
 # Диаграмма классов
 ## Описание диаграммы
 Диаграмма содержит 6 классов:
+
 - Метрики анализа
 - Модель
 - Пользователь
@@ -28,11 +32,12 @@
 - Атрибут элемента
 
 Связи:
+
 - Элемент модели и Атрибут элемента (Композиция)
 - Модель и Элемент модели (Композиция)
 - Остальные связи – Ассоциация
 
-![Untitled Diagram-Classes drawio](https://github.com/user-attachments/assets/e3987672-49ac-47f6-b4ba-ea028f464150)
+![Diagrams-Classes drawio](https://github.com/user-attachments/assets/f4b27042-83fe-4c04-8cd8-a79cc1d95210)
 
 # Реализация клиентского и серверного кода с учётом принципов KISS, YAGNI, DRY и SOLID
 
@@ -86,63 +91,102 @@ if __name__ == "__main__":
 
 ## Серверный код
 
-1. Шлюз API:
 ```python
+from abc import ABC
 from fastapi import FastAPI, UploadFile
-from modules.preprocessor import Preprocessor
-from modules.recognition import RecognitionEngine
-from modules.result_manager import ResultManager
 
+# Интерфейсы для внедрения зависимостей
+class IPreprocessor(ABC):
+    @abstractmethod
+    def process(self, data: bytes) -> bytes:
+        pass
+
+class IRecognitionEngine(ABC):
+    @abstractmethod
+    def analyze(self, data: bytes) -> dict:
+        pass
+
+class IResultManager(ABC):
+    @abstractmethod
+    def save_result(self, result: dict) -> None:
+        pass
+
+# Реализация компонентов
+class Preprocessor(IPreprocessor):
+    def process(self, data: bytes) -> bytes:
+        # Реализация предобработки
+        return data
+
+class RecognitionEngine(IRecognitionEngine):
+    def analyze(self, data: bytes) -> dict:
+        # Реализация распознавания
+        return {"result": "success"}
+
+class ResultManager(IResultManager):
+    def save_result(self, result: dict) -> None:
+        # Реализация сохранения результата
+        print("Result saved:", result)
+
+# Основной процесс обработки
+class ModelProcessor:
+    def __init__(self, preprocessor: IPreprocessor, recognition_engine: IRecognitionEngine, result_manager: IResultManager):
+        self.preprocessor = preprocessor
+        self.recognition_engine = recognition_engine
+        self.result_manager = result_manager
+
+    def process(self, data: bytes) -> dict:
+        preprocessed_data = self.preprocessor.process(data)
+        recognition_result = self.recognition_engine.analyze(preprocessed_data)
+        self.result_manager.save_result(recognition_result)
+        return recognition_result
+
+# FastAPI приложение
 app = FastAPI()
 
+# Внедрение зависимостей
 preprocessor = Preprocessor()
 recognition_engine = RecognitionEngine()
 result_manager = ResultManager()
+model_processor = ModelProcessor(preprocessor, recognition_engine, result_manager)
 
 @app.post("/api/process_model")
 async def process_model(file: UploadFile):
     try:
         data = await file.read()
-        preprocessed_data = preprocessor.process(data)
-        recognition_result = recognition_engine.analyze(preprocessed_data)
-        result_manager.save_result(recognition_result)
+        recognition_result = model_processor.process(data)
         return {"status": "success", "result": recognition_result}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 ```
 ### Принципы:
-- SOLID: Каждый модуль выполняет свою ответственность.
+- **S**
+    
+    Каждый класс отвечает за одну конкретную задачу:
+    
+    - `Preprocessor`: только предобработка данных.
+    - `RecognitionEngine`: только анализ данных.
+    - `ResultManager`: только управление результатами.
+    - `ModelProcessor`: координирует работу компонентов, разделяя их обязанности.
+- **O**
+    
+    Код легко расширить, не изменяя существующие классы:
+    
+    - Можно добавить новый `IPreprocessor` или `IRecognitionEngine` без изменения основного процесса.
+    - Для этого достаточно реализовать новый класс, соответствующий интерфейсу.
+- **L**
+    
+    Все классы, реализующие интерфейсы (`IPreprocessor`, `IRecognitionEngine`, `IResultManager`), могут заменять друг друга без изменений в `ModelProcessor`.
+    
+    - Например, `Preprocessor` можно заменить на другой, который работает с изображениями, а не текстом.
+- **I**
+    
+    Интерфейсы разделены на небольшие и конкретные (`IPreprocessor`, `IRecognitionEngine`, `IResultManager`), чтобы не навязывать неиспользуемые методы.
+    
+    - Классы зависят только от нужных интерфейсов.
+- **D**
+    
+    Компоненты зависят от абстракций (интерфейсов), а не от конкретных реализаций.
+    
+    - В `ModelProcessor` используются интерфейсы `IPreprocessor`, `IRecognitionEngine`, `IResultManager`, что упрощает замену зависимостей.
 - KISS: Простой метод API для обработки входных данных.
 - YAGNI: Реализована только базовая логика.
-
-2. Модуль предварительной обработки: 
-```python
-class Preprocessor:
-    def process(self, raw_data):
-        # KISS: Нормализация данных
-        normalized_data = raw_data.decode("utf-8").strip()
-        if not normalized_data:
-            raise ValueError("Данные пусты или некорректны.")
-        return normalized_data
-```
-3. Модуль распознавания
-```python
-class RecognitionEngine:
-    def analyze(self, data):
-        # KISS: Простая логика распознавания
-        if "model" in data:
-            return {"status": "recognized", "details": "Модель успешно распознана"}
-        else:
-            raise ValueError("Модель не распознана")
-```
-4. Модуль результатов
-```python
-class ResultManager:
-    def __init__(self):
-        self.results = []
-
-    def save_result(self, result):
-        # KISS: Сохранение результата
-        self.results.append(result)
-        print("Результат сохранён:", result)
-```
