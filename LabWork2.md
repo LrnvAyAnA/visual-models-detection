@@ -18,7 +18,8 @@
 4. База данных  
    - Хранит загруженные модели, данные пользователей и результаты обработки.
 
-![Context drawio](https://github.com/user-attachments/assets/dab97a13-fc26-4949-a6a1-974b62bc025b)
+
+![Сист контекст drawio](https://github.com/user-attachments/assets/12c95789-8acb-4533-be30-3a14c42b72ad)
 
 
 # Описание диаграммы контейнеров
@@ -55,7 +56,9 @@
    - Библиотека моделей машинного обучения для анализа загруженных визуальных моделей.
    - Инструменты для построения визуализаций.
 
-![Container drawio](https://github.com/user-attachments/assets/a98a6bf6-4f56-42da-b902-1c1728c26c0c)
+
+![Диаг контейнеров drawio](https://github.com/user-attachments/assets/5f423281-7a51-4294-aeec-c625b2685bbc)
+
 
 # Диаграмма контейнеров для контейнера Сервер анализа и распознавания
 ## Основные компоненты системы
@@ -79,4 +82,6 @@
    - Сохраняет и предоставляет результаты работы системы.
    - Формирует данные для передачи клиентским приложениям.
 
-![paps-Page-4 drawio (1)](https://github.com/user-attachments/assets/2edb4190-5087-482d-b663-8d741f1954c5)
+![Диаг компонентов контейнера drawio](https://github.com/user-attachments/assets/17af4cbf-1e68-49ff-b65d-8e2828e46fd9)
+
+
