@@ -61,7 +61,18 @@ URL: `/images`
 
 Описание: Создает новое изображение в хранилище. Возвращает уникальный `image_id` для созданного изображения.
 
+Пример запроса:
 
+`http://127.0.0.1:5000/images`
+
+Пример ответа:
+
+```
+{
+    "image_id": 1,
+    "status": "uploaded"
+}
+```
 ### 2. Получение данных об изображении
 
 Метод: `GET`
@@ -75,6 +86,25 @@ URL: `/results/<image_id>`
 `200 OK`: Данные успешно получены.
 
 `404 Not Found`: Изображение с указанным image_id не найдено.
+
+Пример запроса:
+
+`http://127.0.0.1:5000/results/1`
+
+Пример ответа:
+
+```
+{
+    "connections": [],
+    "nodes": [
+        {
+            "id": 1,
+            "name": "Decision Node",
+            "type": "Decision"
+        }
+    ]
+}
+```
 
 ### 3. Создание узла
 
@@ -90,6 +120,32 @@ URL: `/results/<image_id>/nodes`
 
 `404 Not Found`: Изображение с указанным `image_id` не найдено.
 
+Пример запроса:
+
+`http://127.0.0.1:5000/results/1/nodes`
+
+Тело запроса:
+
+```
+{
+  "name": "Decision Node",
+  "type": "Decision"
+}
+```
+
+Пример ответа:
+
+```
+{
+    "node": {
+        "id": 1,
+        "name": "Decision Node",
+        "type": "Decision"
+    },
+    "status": "created"
+}
+```
+
 ### 4. Обновление узла
 Метод: `PUT`
 
@@ -102,6 +158,27 @@ URL: `/results/<image_id>/nodes/<node_id>`
 `200 OK`: Узел успешно обновлен.
 
 `404 Not Found`: Изображение или узел с указанными `image_id` и `node_id` не найдены.
+
+Пример запроса:
+
+`http://127.0.0.1:5000/results/1/nodes/3`
+
+Тело запроса:
+
+```
+{
+  "name": "Updated Decision Node",
+  "type": "Updated Type"
+}
+```
+
+Пример ответа:
+
+```
+{
+  "status": "updated"
+}
+```
 
 ### 5. Удаление изображения
 
@@ -117,6 +194,18 @@ URL: `/results/<image_id>`
 
 `404 Not Found`: Изображение с указанным `image_id` не найдено.
 
+Пример запроса:
+
+`http://127.0.0.1:5000/results/1`
+
+Пример ответа:
+
+```
+{
+  "status": "deleted"
+}
+```
+
 ### 6. Получение данных об узле
 
 Метод: `GET`
@@ -130,6 +219,20 @@ URL: `/nodes/<node_id>`
 `200 OK`: Узел успешно найден.
 
 `404 Not Found`: Узел с указанным `node_id` не найден.
+
+Пример запроса:
+
+`http://127.0.0.1:5000/nodes/3`
+
+Пример ответа:
+
+```
+{
+  "id": 3,
+  "name": "Updated Decision Node",
+  "type": "Updated Type"
+}
+```
 
 ### 7. Экспорт результатов
 
@@ -147,6 +250,57 @@ URL: `/results/export`
 
 `400 Bad Request`: Указан неподдерживаемый формат.
 
+Пример запроса:
+
+`http://127.0.0.1:5000/results/export`
+
+Тело запроса:
+
+```
+{
+  "image_id": 1,
+  "format": "json"
+}
+```
+
+Пример ответа:
+
+```
+{
+    "data": {
+        "connections": [],
+        "nodes": []
+    },
+    "status": "exported"
+}
+```
+
+### 8. Удаление узла
+
+Метод: `DELETE`
+
+URL: `/nodes/<node_id>`
+
+Описание: Удаляет узел с указанным `node_id` из базы данных. Если узел связан с другими элементами, связи также удаляются.
+
+Коды ответа:
+
+`200 OK` – Узел удалён.
+
+`404 Not Found` – Узел не найден.
+
+Пример запроса:
+
+`http://127.0.0.1:5000/nodes/3`
+
+Пример ответа:
+
+```
+{
+    "status": "Node deleted"
+}
+```
+
 ## Тестирование API
 ### 1. Загрузка изображения
 
@@ -154,8 +308,7 @@ URL: `/results/export`
 
 URL: `/images`
 
-![image](https://github.com/user-attachments/assets/a50361da-0ea9-4893-840f-ef69d5f08b0b)
-![image](https://github.com/user-attachments/assets/bde38ecc-ece0-454b-bfda-b8471f33549d)
+![image](https://github.com/user-attachments/assets/901316f3-8740-4523-b3d9-ad80f26187df)
 
 ### 2. Получение данных об изображении
 
@@ -163,8 +316,7 @@ URL: `/images`
 
 URL: `/results/<image_id>`
 
-![image](https://github.com/user-attachments/assets/40b33428-3806-4c8f-b648-c75a6080814a)
-![image](https://github.com/user-attachments/assets/bd7a4b0d-f4b3-4a83-918d-479f7ec92f7f)
+![image](https://github.com/user-attachments/assets/75ff62f9-57b8-4f67-a9d0-2fe4026725d9)
 
 ### 3. Создание узла
 
@@ -172,16 +324,14 @@ URL: `/results/<image_id>`
 
 URL: `/results/<image_id>/nodes`
 
-![image](https://github.com/user-attachments/assets/8cf98d08-e573-4e6c-8539-588ecb60f30b)
-![image](https://github.com/user-attachments/assets/4275f329-bada-4eef-8dce-7ee8d8669504)
+![image](https://github.com/user-attachments/assets/f0fffaa8-7689-4f83-bb60-60b612cf80a8)
 
 ### 4. Обновление узла
 Метод: `PUT`
 
 URL: `/results/<image_id>/nodes/<node_id>`
 
-![image](https://github.com/user-attachments/assets/be1948f0-3c00-46a0-963b-ccbeeeb2597d)
-![image](https://github.com/user-attachments/assets/2e213a6e-5d10-4c8b-90ee-7d3f3577ba5e)
+![image](https://github.com/user-attachments/assets/af9cba78-6cf3-48ed-862d-1ab4cd807265)
 
 ### 5. Удаление изображения
 
@@ -189,8 +339,7 @@ URL: `/results/<image_id>/nodes/<node_id>`
 
 URL: `/results/<image_id>`
 
-![image](https://github.com/user-attachments/assets/3278443f-19b1-4f2a-8808-0df4dc2e17ea)
-![image](https://github.com/user-attachments/assets/a6984220-0f3a-43ad-85eb-d69517c03d50)
+![image](https://github.com/user-attachments/assets/4d883868-f93a-412b-89cc-77d332d08b01)
 
 ### 6. Получение данных об узле
 
@@ -198,8 +347,7 @@ URL: `/results/<image_id>`
 
 URL: `/nodes/<node_id>`
 
-![image](https://github.com/user-attachments/assets/966e0f06-e7ca-46c4-bb19-667296e9eada)
-![image](https://github.com/user-attachments/assets/aa40c088-a9f8-4bcb-ad66-5d380a2e8617)
+![image](https://github.com/user-attachments/assets/fe0d8806-3b49-4236-9977-ec49afc31e0c)
 
 ### 7. Экспорт результатов
 
@@ -207,5 +355,12 @@ URL: `/nodes/<node_id>`
 
 URL: `/results/export`
 
-![image](https://github.com/user-attachments/assets/305f23f1-93d7-4baf-a903-ed23241c9cae)
-![image](https://github.com/user-attachments/assets/15a83fec-ebb0-4e71-87e7-f4a37c3341d7)
+![image](https://github.com/user-attachments/assets/24cd1709-36c2-452c-9554-4ce40557758a)
+
+### 8. Удаление узла
+
+Метод: `DELETE`
+
+URL: `/nodes/<node_id>`
+
+![image](https://github.com/user-attachments/assets/d6a7809f-81ec-4461-9f50-d61e4fb28a86)
