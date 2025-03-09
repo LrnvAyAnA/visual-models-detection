@@ -192,64 +192,68 @@ print(image2)  # Image(JPG, 1920x1080, Filters: Contrast, Sharpen)
 ```
 ### Результаты:
 
-Структурные шаблоны
+- Упрощение создания изображений с разными параметрами.
+- Обеспечение расширяемости (легко добавить новые параметры или типы изображений).
 
-1. Singleton
+# Структурные шаблоны
+
+## 1. Adapter
 
 ### Описание:
 
+Вместо того чтобы напрямую работать с DataManager, используется DataManagerAdapter, который реализует интерфейс ImageStorageAdapter.
+
 ### UML-диаграмма:
+
+![image](https://github.com/user-attachments/assets/aaa98881-4372-43e7-9bc3-299e7fb71042)
 
 ### Программный код:
 
 ```python
-class DataManager:
-    _instance = None
+from abc import ABC, abstractmethod
+from singleton import DataManager
 
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(DataManager, cls).__new__(cls)
-            cls._instance.images_data = {}
-        return cls._instance
+# Интерфейс адаптера
+class ImageStorageAdapter(ABC):
+    @abstractmethod
+    def add_image(self, image_id, name, path):
+        pass
 
-    def add_image(self, name, path):
-        image_id = len(self.images_data) + 1
-        self.images_data[image_id] = {"name": name, "path": path}
-        return image_id
+    @abstractmethod
+    def get_image(self, image_id):
+        pass
+
+    @abstractmethod
+    def update_image(self, image_id, name=None, path=None):
+        pass
+
+    @abstractmethod
+    def delete_image(self, image_id):
+        pass
+
+# Адаптер для использования DataManager
+class DataManagerAdapter(ImageStorageAdapter):
+    def __init__(self):
+        self.manager = DataManager()
+
+    def add_image(self, image_id, name, path):
+        self.manager.add_image(image_id, name, path)
 
     def get_image(self, image_id):
-        return self.images_data.get(image_id)
+        return self.manager.get_image(image_id)
 
     def update_image(self, image_id, name=None, path=None):
-        image = self.images_data.get(image_id)
-        if image:
-            if name:
-                image["name"] = name
-            if path:
-                image["path"] = path
-            return image
-        return None
+        return self.manager.update_image(image_id, name, path)
 
     def delete_image(self, image_id):
-        return self.images_data.pop(image_id, None)
+        return self.manager.delete_image(image_id)
 ```
 ### Результаты:
 
-- Класс **DataManager** создается только один раз.
-- Весь доступ к данным идет через один объект.
-- Если вызвать **DataManager()** несколько раз, всегда будет возвращаться один и тот же объект.
+- Адаптер отделяет логику работы с данными от DataManager.
+- Позволяет в будущем легко изменить способ хранения (например, добавить работу с базой данных).
 
-2. Название шаблона
-
-### Описание:
-
-### UML-диаграмма:
-
-### Программный код:
-
-### Результаты:
-
-3. Название шаблона
+## 2. Decorator
 
 ### Описание:
 
@@ -259,7 +263,17 @@ class DataManager:
 
 ### Результаты:
 
-4. Название шаблона
+## 3. Название шаблона
+
+### Описание:
+
+### UML-диаграмма:
+
+### Программный код:
+
+### Результаты:
+
+## 4. Название шаблона
 
 ### Описание:
 
@@ -271,7 +285,7 @@ class DataManager:
 
 # Поведенческие шаблоны
 
-1. Название шаблона
+## 1. Название шаблона
 
 ### Описание:
 
@@ -281,7 +295,7 @@ class DataManager:
 
 ### Результаты:
 
-2. Название шаблона
+## 2. Название шаблона
 
 ### Описание:
 
@@ -291,7 +305,7 @@ class DataManager:
 
 ### Результаты:
 
-3. Название шаблона
+## 3. Название шаблона
 
 ### Описание:
 
@@ -301,7 +315,7 @@ class DataManager:
 
 ### Результаты:
 
-4. Название шаблона
+## 4. Название шаблона
 
 ### Описание:
 
@@ -311,7 +325,7 @@ class DataManager:
 
 ### Результаты:
 
-5. Название шаблона
+## 5. Название шаблона
 
 ### Описание:
 
@@ -321,40 +335,3 @@ class DataManager:
 
 ### Результаты:
 
-# Шаблоны проектирования GRASP
-
-## Роли (обязанности) классов
-
-### Проблема:
-
-### Решение:
-
-### Программный код:
-
-### Результаты:
-
-Связь с другими паттернами:
-
-Принципы разработки
-
-Проблема:
-
-Решение:
-
-Программный код:
-
-Результаты:
-
-Связь с другими паттернами:
-
-Свойство программы (цель)
-
-Проблема:
-
-Решение:
-
-Программный код:
-
-Результаты:
-
-Связь с другими паттернами:
